@@ -4,7 +4,7 @@ info:
   title: txprop21
   description: Get transaction propagation information for a new transaction. Old transactions are not supported, i.e. created more than 3 hours ago.
   contact: {email: ayeowch@gmail.com, name: Addy Yeow}
-  x-21-quick-buy: 21 buy url http://10.244.227.106:8008/?tx=TX_HASH
+  x-21-quick-buy: 21 buy http://10.244.227.106:8008/?tx=TX_HASH --maxprice=5
   x-21-category: blockchain
   x-21-github-project-url: https://github.com/ayeowch/txprop21
   x-21-keywords: [bitcoin, network, transaction, propagation]
