@@ -30,7 +30,7 @@ The server will run as background process with log entries written into access.l
 
 Only one instance of the server will be running at any one time, i.e. executing `./runserver.sh` again will terminate the old instance of the server and start a new one.
 
-Check that the server is running by running follow the steps below.
+Check that the server is running by following the steps below.
 
 ```
 $ tail access.log
@@ -52,7 +52,7 @@ The example below shows that a new transaction with transaction hash 08dcc2.. ha
 
 The information in the `nodes` field shows how fast the transaction is propagating across the network. In the example below, 50% of the nodes broadcasted the transaction within 902 milliseconds.
 
-You might need to replace the transaction hash with a newly generated transaction, e.g. transaction that you have just made. You can then use the information to, e.g. decide legitimacy of the new transaction by looking at how well the transaction is propagating across the Bitcoin network.
+You might want to replace the transaction hash with a newly generated transaction, such as transaction that you have just made. You can then use the information to decide legitimacy of the new transaction by looking at how well the transaction is propagating across the Bitcoin network.
 
 ```
 $ 21 buy http://10.244.227.106:8008/?tx=08dcc2
