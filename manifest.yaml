@@ -2,40 +2,174 @@ basePath: /
 host: 10.244.227.106:8008
 info:
   title: txprop21
-  description: Get transaction propagation information for a new transaction. Old transactions are not supported, i.e. created more than 3 hours ago.
-  contact: {email: ayeowch@gmail.com, name: Addy Yeow}
-  x-21-quick-buy: 21 buy http://10.244.227.106:8008/?tx=TX_HASH --maxprice=5
+  description: Get Bitcoin transaction propagation information for a new transaction.
+  contact:
+    email: ayeowch@gmail.com
+    name: Addy Yeow
+    url: https://bitnodes.21.co
+  license:
+    name: MIT LICENSE
+    url: https://opensource.org/licenses/MIT
+  version: '0.1'
   x-21-category: blockchain
   x-21-github-project-url: https://github.com/ayeowch/txprop21
-  x-21-keywords: [bitcoin, network, transaction, propagation]
-  x-21-total-price: {min: 5, max: 5}
+  x-21-keywords:
+  - bitcoin
+  - network
+  - transaction
+  - propagation
+  x-21-total-price:
+    min: 5
+    max: 5
+  x-21-quick-buy: |
+    $ 21 buy http://10.244.227.106:8008/
+    {
+        "propagation": {
+            "first_node": {
+                "address": "2a02:348:86:3011::1",
+                "port": 8333
+            },
+            "last_node": {
+                "address": "24.17.21.245",
+                "port": 8333
+            },
+            "nodes": {
+                "25%_ms": 323.0,
+                "50%_ms": 519.5,
+                "75%_ms": 3460.25,
+                "count": 1976,
+                "max_ms": 24252.0,
+                "mean_ms": 3168.139817629179,
+                "min_ms": 1.0
+            },
+            "propagation_level": 40.8
+        },
+        "reachable_nodes": 4843,
+        "tx_age_ms": 30329,
+        "tx_hash": "1e1793f038f628d005133e4dd79b9555299c18956880eab9ee7ac556f4c4eac4"
+    }
+
+    $ 21 buy http://10.244.227.106:8008/?tx=08dcc2
+    {
+        "propagation": {
+            "first_node": {
+                "address": "qyukxbbf6gvjbs77.onion",
+                "port": 8333
+            },
+            "last_node": {
+                "address": "82.221.133.147",
+                "port": 8333
+            },
+            "nodes": {
+                "25%_ms": 414.0,
+                "50%_ms": 902.0,
+                "75%_ms": 3949.75,
+                "count": 1968,
+                "max_ms": 30489.0,
+                "mean_ms": 3471.3006103763987,
+                "min_ms": 41.0
+            },
+            "propagation_level": 40.64
+        },
+        "reachable_nodes": 4843,
+        "tx_age_ms": 33833,
+        "tx_hash": "08dcc2c14dd122b0dc5dcf1156dff0ea6b2c4824f24f6fb22393f7b013995025"
+    }
+definitions:
+  propagation:
+    type: object
+    properties:
+      first_node:
+        $ref: '#/definitions/first_node'
+      last_node:
+        $ref: '#/definitions/last_node'
+      nodes:
+        $ref: '#/definitions/nodes'
+      propagation_level:
+        type: number
+        format: float
+  first_node:
+    type: object
+    properties:
+      address:
+        type: string
+      port:
+        type: integer
+        format: int32
+  last_node:
+    type: object
+    properties:
+      address:
+        type: string
+      port:
+        type: integer
+        format: int32
+  nodes:
+    type: object
+    properties:
+      25%_ms:
+        type: number
+        format: float
+      50%_ms:
+        type: number
+        format: float
+      75%_ms:
+        type: number
+        format: float
+      count:
+        type: integer
+        format: int32
+      max_ms:
+        type: number
+        format: float
+      mean_ms:
+        type: number
+        format: float
+      min_ms:
+        type: number
+        format: float
 paths:
   /:
     get:
-      summary: Get transaction propagation information.
+      summary: Get transaction propagation information
       produces:
-        - application/json
-      parameters:
-        - name: tx
-          description: Transaction hash
-          required: true
+      - application/json
+      responses:
+        '200':
+          description: Transaction propagation information
           schema:
             type: object
             properties:
-              text:
+              propagation:
+                $ref: '#/definitions/propagation'
+              reachable_nodes:
+                type: integer
+                format: int32
+              tx_age_ms:
+                type: integer
+                format: int32
+              tx_hash:
                 type: string
-      responses:
-        200:
-          description: Transaction propagation information.
+        '404':
+          description: Transaction not found
           schema:
             type: object
-        404:
-          description: Invalid transaction.
+            properties:
+              error_message:
+                type: string
+        '500':
+          description: Internal server error
           schema:
-            type: string
-        500:
-          description: Internal server error.
-          schema:
-            type: string
+            type: object
+            properties:
+              error_message:
+                type: string
+    parameters:
+    - name: tx
+      in: query
+      description: Transaction hash
+      required: false
+      type: string
 schemes: [http]
+swagger: '2.0'
 x-21-manifest-path: /manifest

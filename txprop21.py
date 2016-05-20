@@ -25,7 +25,9 @@ def txprop21(tx_hash):
 
 
 if __name__ == '__main__':
-    tx_hash = sys.argv[1]
+    tx_hash = None
+    if len(sys.argv) > 1:
+        tx_hash = sys.argv[1]
     (status_code, data) = txprop21(tx_hash)
     if status_code == 200:
         print(json.dumps(data, indent=4, sort_keys=True))
