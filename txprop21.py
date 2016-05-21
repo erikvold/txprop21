@@ -32,4 +32,5 @@ if __name__ == '__main__':
     if status_code == 200:
         print(json.dumps(data, indent=4, sort_keys=True))
     else:
-        print('{}: {}'.format(status_code, data))
+        error = {'error_message': data}
+        print('{}: {}'.format(status_code, json.dumps(error, indent=4)))

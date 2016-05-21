@@ -35,7 +35,8 @@ def root():
     if status_code == 200:
         return tx(data)
     else:
-        return data, status_code
+        error = {'error_message': data}
+        return json.dumps(error, indent=4), status_code
 
 
 @payment.required(5)
