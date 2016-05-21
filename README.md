@@ -9,6 +9,7 @@ Start by installing `21` client from [21.co](https://21.co) in order to follow t
 Installation of `txprop21` is required only if you wish to run the server on your machine.
 
 ```
+$ sudo apt-get install memcached
 $ git clone https://github.com/ayeowch/txprop21.git
 $ cd txprop21
 $ virtualenv venv
@@ -34,7 +35,7 @@ Check that the server is running by following the steps below.
 
 ```
 $ tail access.log
-* Running on http://0.0.0.0:8008/ (Press CTRL+C to quit)
+2016-05-21 04:10:38,366 [INFO] 17515.548136099840 _log >>>  * Running on http://0.0.0.0:8008/ (Press CTRL+C to quit)
 
 $ curl localhost:8008
 Payment Required

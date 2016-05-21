@@ -1,5 +1,6 @@
 click==6.6
 Flask==0.10.1
+python-memcached==1.57
 PyYAML==3.11
 requests==2.10.0
 two1==3.2.3

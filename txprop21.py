@@ -14,23 +14,20 @@ URL = 'https://bitnodes.21.co/api/v1/bitcoind/gettransactionpropagation/'
 
 def txprop21(tx_hash):
     if tx_hash:
-        url = '{}{}'.format(URL, tx_hash)
+        url = '{}{}/'.format(URL, tx_hash)
     else:
         url = URL
     response = requests.get(url)
     if response.status_code == 200:
-        return (response.status_code, response.json())
-    # e.g. (404, 'Not Found'), (500, 'Internal Server Error')
-    return (response.status_code, response.reason)
+        data = response.json()
+    else:
+        data = dict(error_message=response.reason)
+    return dict(status_code=response.status_code, data=data)
 
 
 if __name__ == '__main__':
     tx_hash = None
     if len(sys.argv) > 1:
         tx_hash = sys.argv[1]
-    (status_code, data) = txprop21(tx_hash)
-    if status_code == 200:
-        print(json.dumps(data, indent=4, sort_keys=True))
-    else:
-        error = {'error_message': data}
-        print('{}: {}'.format(status_code, json.dumps(error, indent=4)))
+    response = txprop21(tx_hash)
+    print(json.dumps(response, indent=4, sort_keys=True))

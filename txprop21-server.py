@@ -10,6 +10,7 @@ import sys
 import yaml
 from flask import Flask, request
 from logging.handlers import RotatingFileHandler
+from werkzeug.contrib.cache import MemcachedCache
 
 from two1.bitserv.flask import Payment
 from two1.wallet import Wallet
@@ -17,6 +18,7 @@ from two1.wallet import Wallet
 from txprop21 import txprop21
 
 app = Flask(__name__)
+cache = MemcachedCache()
 wallet = Wallet()
 payment = Payment(app, wallet)
 
@@ -31,16 +33,24 @@ def manifest():
 @app.route('/')
 def root():
     tx_hash = request.args.get('tx', '')
-    (status_code, data) = txprop21(tx_hash)
+
+    cache_key = 'response:{}'.format(tx_hash)
+    response = cache.get(cache_key)
+    if response is None:
+        response = txprop21(tx_hash)
+        cache.set(cache_key, response, timeout=5)
+
+    status_code = response.get('status_code')
+    data = response.get('data')
+
     if status_code == 200:
         return tx(data)
-    else:
-        error = {'error_message': data}
-        return json.dumps(error, indent=4), status_code
+    return json.dumps(data, indent=4), status_code
 
 
 @payment.required(5)
 def tx(data):
+    logger.debug('headers={}, data={}'.format(request.headers.to_list(), data))
     return json.dumps(data, indent=4, sort_keys=True)
 
 
@@ -67,9 +77,16 @@ if __name__ == '__main__':
         os.kill(pid, signal.SIGTERM)
     open(pid_file, 'w').write(str(os.getpid()))
 
-    # `werkzeug` is Flask's underlying module.
-    logger = logging.getLogger('werkzeug')
     handler = RotatingFileHandler('access.log', maxBytes=2097152, backupCount=6)
-    logger.addHandler(handler)
+    formatter = logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(process)d.%(thread)d %(funcName)s >>> "
+        "%(message)s")
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
+
+    logger = logging.getLogger('werkzeug')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+
     app.run(host='0.0.0.0', port=8008, threaded=True)
