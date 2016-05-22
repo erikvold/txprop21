@@ -18,6 +18,8 @@ info:
   - network
   - transaction
   - propagation
+  - tx
+  - txprop21
   x-21-total-price:
     min: 5
     max: 5
