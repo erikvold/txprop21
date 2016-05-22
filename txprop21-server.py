@@ -34,7 +34,7 @@ def manifest():
 def root():
     tx_hash = request.args.get('tx', '')
 
-    cache_key = 'response:{}'.format(tx_hash)
+    cache_key = 'txprop21:response:{}'.format(tx_hash)
     response = cache.get(cache_key)
     if response is None:
         response = txprop21(tx_hash)
