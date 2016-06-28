@@ -12,7 +12,7 @@ Installation of `txprop21` is required only if you wish to run the server on you
 $ sudo apt-get install memcached
 $ git clone https://github.com/ayeowch/txprop21.git
 $ cd txprop21
-$ virtualenv venv
+$ virtualenv --python=python3 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
@@ -56,7 +56,7 @@ The information in the `nodes` field shows how fast the transaction is propagati
 You might want to replace the transaction hash with a newly generated transaction, such as transaction that you have just made. You can then use the information to decide legitimacy of the new transaction by looking at how well the transaction is propagating across the Bitcoin network.
 
 ```
-$ 21 buy http://10.244.227.106:8008/?tx=08dcc2
+$ 21 buy http://10.244.129.48:8008/?tx=08dcc2
 {
     "propagation": {
         "first_node": {
