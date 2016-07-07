@@ -5,8 +5,6 @@ import json
 import logging
 import os
 import signal
-import subprocess
-import sys
 import yaml
 from flask import Flask, request
 from logging.handlers import RotatingFileHandler
@@ -77,7 +75,8 @@ if __name__ == '__main__':
         os.kill(pid, signal.SIGTERM)
     open(pid_file, 'w').write(str(os.getpid()))
 
-    handler = RotatingFileHandler('access.log', maxBytes=2097152, backupCount=6)
+    handler = RotatingFileHandler(
+        'access.log', maxBytes=2097152, backupCount=6)
     formatter = logging.Formatter(
         "%(asctime)s [%(levelname)s] %(process)d.%(thread)d %(funcName)s >>> "
         "%(message)s")
