@@ -89,4 +89,4 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 
-    app.run(host='0.0.0.0', port=8008, threaded=True)
+    app.run(host='::', port=8008, threaded=True)
