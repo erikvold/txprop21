@@ -6,7 +6,8 @@ import logging
 import os
 import signal
 import yaml
-from flask import Flask, request
+from argparse import ArgumentParser
+from flask import Flask, jsonify, request
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.cache import MemcachedCache
 
@@ -23,7 +24,7 @@ payment = Payment(app, wallet)
 
 @app.route('/manifest')
 def manifest():
-    with open('./manifest.yaml', 'r') as f:
+    with open('./manifest.yaml') as f:
         content = yaml.load(f)
     return json.dumps(content)
 
@@ -43,13 +44,13 @@ def root():
 
     if status_code == 200:
         return tx(data)
-    return json.dumps(data, indent=4), status_code
+    return jsonify(**data), status_code
 
 
 @payment.required(5)
 def tx(data):
     logger.debug('headers={}, data={}'.format(request.headers.to_list(), data))
-    return json.dumps(data, indent=4, sort_keys=True)
+    return jsonify(**data)
 
 
 def is_running(pid_file):
@@ -66,7 +67,15 @@ def is_running(pid_file):
     return False
 
 
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument('--port', default=8008)
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
+
     program = os.path.basename(__file__)
 
     pid_file = './{}.pid'.format(program)
@@ -88,4 +97,4 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 
-    app.run(host='::', port=8008, threaded=True)
+    app.run(host='::', port=args.port, threaded=True)
