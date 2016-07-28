@@ -1,0 +1,4 @@
+[BITCOIN]
+HOST = 127.0.0.1
+PORT = 8332
+COOKIE = ~/.bitcoin/.cookie

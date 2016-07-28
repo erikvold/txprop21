@@ -64,4 +64,5 @@ target/
 # Project files
 *.log.*
 *.pid
+*.conf
 venv

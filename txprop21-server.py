@@ -7,19 +7,41 @@ import os
 import signal
 import yaml
 from argparse import ArgumentParser
-from flask import Flask, jsonify, request
+from flask import Flask
+from flask import jsonify
+from flask import request
+from flask import Response
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.cache import MemcachedCache
 
 from two1.bitserv.flask import Payment
 from two1.wallet import Wallet
 
+from txprop21 import mempool
 from txprop21 import txprop21
 
 app = Flask(__name__)
 cache = MemcachedCache()
 wallet = Wallet()
 payment = Payment(app, wallet)
+
+DEFAULT_PRICE = 5
+BULK_PRICE = 2
+
+
+def get_limit(request):
+    limit = request.args.get('limit', 1)
+    try:
+        limit = int(limit)
+    except ValueError:
+        limit = 1
+    limit = min(max(limit, 1), 100)  # Limit must be between 1 to 100
+    return limit
+
+
+def get_bulk_price(request):
+    limit = get_limit(request)
+    return limit * BULK_PRICE
 
 
 @app.route('/manifest')
@@ -47,10 +69,31 @@ def root():
     return jsonify(**data), status_code
 
 
-@payment.required(5)
+@payment.required(DEFAULT_PRICE)
 def tx(data):
     logger.debug('headers={}, data={}'.format(request.headers.to_list(), data))
     return jsonify(**data)
+
+
+@app.route('/unconfirmed-txs')
+@payment.required(get_bulk_price)
+def unconfirmed_txs():
+    """EXPERIMENTAL: Get transaction propagation data for unconfirmed txs."""
+    limit = get_limit(request)
+
+    def stream():
+        txs = mempool()[:limit]
+        for tx in txs:
+            tx_hash = tx[0]
+            response = txprop21(tx_hash)
+            status_code = response.get('status_code')
+            data = response.get('data')
+            if status_code != 200:
+                continue
+            logger.debug('data={}'.format(data))
+            yield json.dumps(data, indent=4, sort_keys=True) + '\n'
+
+    return Response(stream(), mimetype='application/json')
 
 
 def is_running(pid_file):

@@ -5,7 +5,10 @@ import json
 import requests
 import sys
 
+from rpc_client import BitcoinClient
+
 __all__ = [
+    'mempool',
     'txprop21',
 ]
 
@@ -23,6 +26,11 @@ def txprop21(tx_hash):
     else:
         data = dict(error_message=response.reason)
     return dict(status_code=response.status_code, data=data)
+
+
+def mempool():
+    rpc = BitcoinClient()
+    return rpc.getrawmempool()
 
 
 if __name__ == '__main__':
