@@ -23,7 +23,7 @@ from txprop21 import txprop21
 app = Flask(__name__)
 cache = MemcachedCache()
 wallet = Wallet()
-payment = Payment(app, wallet)
+payment = Payment(app, wallet, zeroconf=True)
 
 DEFAULT_PRICE = 5
 BULK_PRICE = 2
