@@ -25,8 +25,8 @@ cache = MemcachedCache()
 wallet = Wallet()
 payment = Payment(app, wallet, zeroconf=True)
 
-DEFAULT_PRICE = 5
-BULK_PRICE = 2
+DEFAULT_PRICE = 5000
+BULK_PRICE = 2000
 
 
 def get_limit(request):

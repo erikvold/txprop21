@@ -22,7 +22,7 @@ info:
   - txprop21
   x-21-total-price:
     min: 5
-    max: 5
+    max: 20000
   x-21-quick-buy: |
     $ 21 buy http://10.244.129.48:8008/
     {
