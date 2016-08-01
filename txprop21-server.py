@@ -10,7 +10,6 @@ from argparse import ArgumentParser
 from flask import Flask
 from flask import jsonify
 from flask import request
-from flask import Response
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.cache import MemcachedCache
 
@@ -26,7 +25,7 @@ wallet = Wallet()
 payment = Payment(app, wallet, zeroconf=True)
 
 DEFAULT_PRICE = 5000
-BULK_PRICE = 2000
+BULK_PRICE = 100
 
 
 def get_limit(request):
@@ -66,34 +65,30 @@ def root():
 
     if status_code == 200:
         return tx(data)
-    return jsonify(**data), status_code
+    return jsonify(data), status_code
 
 
 @payment.required(DEFAULT_PRICE)
 def tx(data):
     logger.debug('headers={}, data={}'.format(request.headers.to_list(), data))
-    return jsonify(**data)
+    return jsonify(data)
 
 
 @app.route('/unconfirmed-txs')
 @payment.required(get_bulk_price)
 def unconfirmed_txs():
-    """EXPERIMENTAL: Get transaction propagation data for unconfirmed txs."""
     limit = get_limit(request)
-
-    def stream():
-        txs = mempool()[:limit]
-        for tx in txs:
-            tx_hash = tx[0]
-            response = txprop21(tx_hash)
-            status_code = response.get('status_code')
-            data = response.get('data')
-            if status_code != 200:
-                continue
-            logger.debug('data={}'.format(data))
-            yield json.dumps(data, indent=4, sort_keys=True) + '\n'
-
-    return Response(stream(), mimetype='application/json')
+    txs = []
+    for tx in mempool()[:limit]:
+        tx_hash = tx[0]
+        response = txprop21(tx_hash)
+        status_code = response.get('status_code')
+        data = response.get('data')
+        if status_code != 200:
+            continue
+        logger.debug('data={}'.format(data))
+        txs.append(data)
+    return jsonify(txs)
 
 
 def is_running(pid_file):
