@@ -135,4 +135,6 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 
+    logger.addHandler(logging.StreamHandler())
+
     app.run(host='::', port=args.port, threaded=True)
