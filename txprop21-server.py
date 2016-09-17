@@ -10,22 +10,28 @@ from argparse import ArgumentParser
 from flask import Flask
 from flask import jsonify
 from flask import request
-from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.cache import MemcachedCache
 
 from two1.bitserv.flask import Payment
-from two1.wallet import Wallet
+from two1.blockchain.twentyone_provider import TwentyOneProvider
+from two1.wallet import Two1Wallet
 
 from txprop21 import mempool
 from txprop21 import txprop21
 
 app = Flask(__name__)
 cache = MemcachedCache()
-wallet = Wallet()
+data_provider = TwentyOneProvider(testnet=True)
+wallet_path = os.path.join(
+    os.path.expanduser('~'),
+    '.two1',
+    'wallet',
+    'testnet_wallet.json')
+wallet = Two1Wallet(wallet_path, data_provider)
 payment = Payment(app, wallet, zeroconf=True)
 
-DEFAULT_PRICE = 5000
-BULK_PRICE = 100
+DEFAULT_PRICE = 10000
+BULK_PRICE = 10
 
 
 def get_limit(request):
@@ -90,20 +96,6 @@ def unconfirmed_txs():
     return jsonify(txs)
 
 
-def is_running(pid_file):
-    if os.path.exists(pid_file):
-        try:
-            pid = int(open(pid_file).read())
-        except ValueError:
-            return False
-        try:
-            os.kill(pid, 0)
-            return True
-        except OSError:
-            os.remove(pid_file)
-    return False
-
-
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--port', default=8008)
@@ -115,25 +107,11 @@ if __name__ == '__main__':
 
     program = os.path.basename(__file__)
 
-    pid_file = './{}.pid'.format(program)
-    if is_running(pid_file):
-        pid = int(open(pid_file).read())
-        os.kill(pid, signal.SIGTERM)
-    open(pid_file, 'w').write(str(os.getpid()))
-
-    handler = RotatingFileHandler(
-        'access.log', maxBytes=2097152, backupCount=6)
-    formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(process)d.%(thread)d %(funcName)s >>> "
-        "%(message)s")
-    handler.setFormatter(formatter)
+    handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(handler)
 
-    logger = logging.getLogger('werkzeug')
+    logger = logging.getLogger('')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 
-    logger.addHandler(logging.StreamHandler())
-
-    app.run(host='::', port=args.port, threaded=True)
+    app.run(host='::', port=args.port, debug=True)

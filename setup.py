@@ -5,6 +5,7 @@ setuptools.setup(
     version='0.0.1',
     packages=setuptools.find_packages(),
     install_requires=[
+        'Django==1.8.3',
         'Flask',
         'python-memcached',
         'PyYAML',
