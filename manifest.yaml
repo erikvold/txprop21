@@ -1,5 +1,5 @@
 basePath: /
-host: 10.244.129.48:8008
+host: '[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008'
 info:
   title: txprop21
   description: Get Bitcoin transaction propagation information for a new transaction.
@@ -24,7 +24,7 @@ info:
     min: 5
     max: 20000
   x-21-quick-buy: |
-    $ 21 buy http://10.244.129.48:8008/
+    $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/
     {
         "propagation": {
             "first_node": {
@@ -51,7 +51,7 @@ info:
         "tx_hash": "1e1793f038f628d005133e4dd79b9555299c18956880eab9ee7ac556f4c4eac4"
     }
 
-    $ 21 buy http://10.244.129.48:8008/?tx=08dcc2
+    $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/?tx=08dcc2
     {
         "propagation": {
             "first_node": {
