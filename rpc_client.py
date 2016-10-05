@@ -162,6 +162,9 @@ def main():
     best_block_hash = rpc.getbestblockhash()
     print(best_block_hash)
 
+    mempool = rpc.getrawmempool()
+    print(mempool[:3])
+
 
 if __name__ == '__main__':
     main()

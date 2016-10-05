@@ -21,157 +21,147 @@ info:
   - tx
   - txprop21
   x-21-total-price:
-    min: 5
-    max: 20000
+    min: 100
+    max: 10000
   x-21-quick-buy: |
     $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/
     {
         "propagation": {
-            "first_node": {
-                "address": "2a02:348:86:3011::1",
+            "propagation_level": 100.0,
+            "last_node": {
+                "address": "74.104.125.220",
                 "port": 8333
             },
-            "last_node": {
-                "address": "24.17.21.245",
+            "first_node": {
+                "address": "82.221.128.3",
                 "port": 8333
             },
             "nodes": {
-                "25%_ms": 323.0,
-                "50%_ms": 519.5,
-                "75%_ms": 3460.25,
-                "count": 1976,
-                "max_ms": 24252.0,
-                "mean_ms": 3168.139817629179,
-                "min_ms": 1.0
-            },
-            "propagation_level": 40.8
+                "min_ms": 431.0,
+                "25%_ms": 1640.25,
+                "50%_ms": 3577.0,
+                "mean_ms": 6312.039648521218,
+                "75%_ms": 7161.0,
+                "max_ms": 461280.0,
+                "count": 4668
+            }
         },
-        "reachable_nodes": 4843,
-        "tx_age_ms": 30329,
-        "tx_hash": "1e1793f038f628d005133e4dd79b9555299c18956880eab9ee7ac556f4c4eac4"
+        "reachable_nodes": 4436,
+        "tx_age_ms": 526873,
+        "tx_hash": "70f46a13ebd776784c5565d91be981ece99919c401082c753ca7237f5645560c"
     }
 
-    $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/?tx=08dcc2
+    You spent: 5000 satoshis. Remaining 21.co balance: 3654377 satoshis.
+
+    $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/?tx=36921f
     {
         "propagation": {
-            "first_node": {
-                "address": "qyukxbbf6gvjbs77.onion",
-                "port": 8333
-            },
+            "propagation_level": 2.51,
             "last_node": {
-                "address": "82.221.133.147",
+                "address": "86.150.103.243",
                 "port": 8333
             },
             "nodes": {
-                "25%_ms": 414.0,
-                "50%_ms": 902.0,
-                "75%_ms": 3949.75,
-                "count": 1968,
-                "max_ms": 30489.0,
-                "mean_ms": 3471.3006103763987,
-                "min_ms": 41.0
+                "count": 109,
+                "min_ms": 512.0,
+                "25%_ms": 9317.5,
+                "75%_ms": 18542.0,
+                "50%_ms": 12397.0,
+                "mean_ms": 13876.018691588784,
+                "max_ms": 37704.0
             },
-            "propagation_level": 40.64
+            "first_node": {
+                "address": "vk3qjdehyy4dwcxw.onion",
+                "port": 8333
+            }
         },
-        "reachable_nodes": 4843,
-        "tx_age_ms": 33833,
-        "tx_hash": "08dcc2c14dd122b0dc5dcf1156dff0ea6b2c4824f24f6fb22393f7b013995025"
+        "reachable_nodes": 4342,
+        "tx_age_ms": 65340,
+        "tx_hash": "36921fe5596e456bde6d0a04c140528dc451b50cc46c272974fa12ac257f1203"
     }
-definitions:
-  propagation:
-    type: object
-    properties:
-      first_node:
-        $ref: '#/definitions/first_node'
-      last_node:
-        $ref: '#/definitions/last_node'
-      nodes:
-        $ref: '#/definitions/nodes'
-      propagation_level:
-        type: number
-        format: float
-  first_node:
-    type: object
-    properties:
-      address:
-        type: string
-      port:
-        type: integer
-        format: int32
-  last_node:
-    type: object
-    properties:
-      address:
-        type: string
-      port:
-        type: integer
-        format: int32
-  nodes:
-    type: object
-    properties:
-      25%_ms:
-        type: number
-        format: float
-      50%_ms:
-        type: number
-        format: float
-      75%_ms:
-        type: number
-        format: float
-      count:
-        type: integer
-        format: int32
-      max_ms:
-        type: number
-        format: float
-      mean_ms:
-        type: number
-        format: float
-      min_ms:
-        type: number
-        format: float
-paths:
-  /:
-    get:
-      summary: Get transaction propagation information
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: Transaction propagation information
-          schema:
-            type: object
-            properties:
-              propagation:
-                $ref: '#/definitions/propagation'
-              reachable_nodes:
-                type: integer
-                format: int32
-              tx_age_ms:
-                type: integer
-                format: int32
-              tx_hash:
-                type: string
-        '404':
-          description: Transaction not found
-          schema:
-            type: object
-            properties:
-              error_message:
-                type: string
-        '500':
-          description: Internal server error
-          schema:
-            type: object
-            properties:
-              error_message:
-                type: string
-    parameters:
-    - name: tx
-      in: query
-      description: Transaction hash
-      required: false
-      type: string
+
+    You spent: 5000 satoshis. Remaining 21.co balance: 3654377 satoshis.
+
+    $ 21 buy http://[fcce:a977:ee64:6e7b:35bb:0000:0000:0001]:8008/unconfirmed-txs?limit=3
+    [
+        {
+            "reachable_nodes": 4342,
+            "tx_hash": "b5bb5f9d9664d5fe9506284372373349662602a8c20e360dc62824811f20b50e",
+            "tx_age_ms": 60538,
+            "propagation": {
+                "propagation_level": 1.98,
+                "last_node": {
+                    "port": 8333,
+                    "address": "60.231.81.30"
+                },
+                "first_node": {
+                    "port": 8333,
+                    "address": "73.190.21.202"
+                },
+                "nodes": {
+                    "75%_ms": 9115.25,
+                    "count": 86,
+                    "min_ms": 1.0,
+                    "mean_ms": 7863.107142857143,
+                    "50%_ms": 5883.5,
+                    "25%_ms": 2992.25,
+                    "max_ms": 45001.0
+                }
+            }
+        },
+        {
+            "reachable_nodes": 4342,
+            "tx_hash": "0e19fd9c6ab19f71990ef71294cead00471b612cab84b3b29c08d67fb834df79",
+            "tx_age_ms": 175506,
+            "propagation": {
+                "propagation_level": 7.53,
+                "last_node": {
+                    "port": 8333,
+                    "address": "b63xlqfa4yvkastx.onion"
+                },
+                "first_node": {
+                    "port": 8333,
+                    "address": "vqpye2k5rcqvj5mq.onion"
+                },
+                "nodes": {
+                    "75%_ms": 8377.0,
+                    "count": 327,
+                    "min_ms": 212.0,
+                    "mean_ms": 6740.68,
+                    "50%_ms": 4361.0,
+                    "25%_ms": 2317.0,
+                    "max_ms": 76935.0
+                }
+            }
+        },
+        {
+            "reachable_nodes": 4342,
+            "tx_hash": "5fc58ea30722cf062a9591e4e2672388d53f24bb8e57e6a3fd36951ba8b14183",
+            "tx_age_ms": 213681,
+            "propagation": {
+                "propagation_level": 2.86,
+                "last_node": {
+                    "port": 8333,
+                    "address": "94.23.252.166"
+                },
+                "first_node": {
+                    "port": 8333,
+                    "address": "174.128.240.102"
+                },
+                "nodes": {
+                    "75%_ms": 21071.25,
+                    "count": 124,
+                    "min_ms": 1.0,
+                    "mean_ms": 16738.77049180328,
+                    "50%_ms": 14275.5,
+                    "25%_ms": 9065.5,
+                    "max_ms": 102018.0
+                }
+            }
+        }
+    ]
+
+    You spent: 300 satoshis. Remaining 21.co balance: 3654377 satoshis.
 schemes: [http]
 swagger: '2.0'
 x-21-manifest-path: /manifest
