@@ -61,15 +61,53 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 
-from two1.blockchain.twentyone_provider import TwentyOneProvider
-data_provider = TwentyOneProvider(testnet=True)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': (
+                '%(asctime)s - %(levelname)s - %(funcName)s - %(message)s'),
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level':'INFO',
+        },
+    },
+}
 
+from two1.blockchain.twentyone_provider import TwentyOneProvider
 from two1.wallet import Two1Wallet
+
+data_provider = TwentyOneProvider(testnet=True)
 wallet_path = os.path.join(
     os.path.expanduser('~'),
     '.two1',
     'wallet',
-    'testnet_wallet.json')
+    'testnet_wallet_1.json')
+# data_provider = TwentyOneProvider()
+# from two1.wallet import Two1Wallet
+# wallet_path = os.path.join(
+#     os.path.expanduser('~'),
+#     '.two1',
+#     'wallet',
+#     'default_wallet.json')
+
 WALLET = Two1Wallet(wallet_path, data_provider)
 
 from two1.bitserv.django import Payment

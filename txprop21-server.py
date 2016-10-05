@@ -19,18 +19,34 @@ from two1.wallet import Two1Wallet
 from txprop21 import mempool
 from txprop21 import txprop21
 
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+logger = logging.getLogger('')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
 app = Flask(__name__)
 cache = MemcachedCache()
+
 data_provider = TwentyOneProvider(testnet=True)
 wallet_path = os.path.join(
     os.path.expanduser('~'),
     '.two1',
     'wallet',
-    'testnet_wallet.json')
+    'testnet_wallet_1.json')
 wallet = Two1Wallet(wallet_path, data_provider)
+# data_provider = TwentyOneProvider()
+# wallet_path = os.path.join(
+#     os.path.expanduser('~'),
+#     '.two1',
+#     'wallet',
+#     'default_wallet.json')
+
+wallet = Two1Wallet(wallet_path, data_provider)
+
 payment = Payment(app, wallet, zeroconf=True)
 
-DEFAULT_PRICE = 10000
+DEFAULT_PRICE = 5000
 BULK_PRICE = 10
 
 
@@ -104,14 +120,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-
     program = os.path.basename(__file__)
-
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-
-    logger = logging.getLogger('')
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
-
     app.run(host='::', port=args.port, debug=True)
