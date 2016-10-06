@@ -120,4 +120,4 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     program = os.path.basename(__file__)
-    app.run(host='::', port=args.port, debug=True)
+    app.run(host='::', port=args.port, threaded=True)
