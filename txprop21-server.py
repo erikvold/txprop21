@@ -34,7 +34,6 @@ wallet_path = os.path.join(
     '.two1',
     'wallet',
     'testnet_wallet_1.json')
-wallet = Two1Wallet(wallet_path, data_provider)
 # data_provider = TwentyOneProvider()
 # wallet_path = os.path.join(
 #     os.path.expanduser('~'),
