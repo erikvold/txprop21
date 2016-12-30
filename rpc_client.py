@@ -69,7 +69,7 @@ class BitcoinClient(object):
         params = kwargs.get('params', [])
         data = json.dumps({
             'id': str(int(time.time() * 1e6)),
-            'jsonrpc': '1.0',
+            'jsonrpc': '1.1',
             'method': cmd,
             'params': params,
         })
@@ -91,78 +91,15 @@ class BitcoinClient(object):
         result = json_data.get('result', None)
         return result
 
-    def getinfo(self, **kwargs):
-        cmd = 'getinfo'
-        info = self.rpc(cmd, **kwargs)
-        return info
-
-    def getblockcount(self, **kwargs):
-        cmd = 'getblockcount'
-        block_count = self.rpc(cmd, **kwargs)
-        return block_count
-
-    def getbestblockhash(self, **kwargs):
-        cmd = 'getbestblockhash'
-        block_hash = self.rpc(cmd, **kwargs)
-        return block_hash
-
-    def getblock(self, hash, **kwargs):
-        cmd = 'getblock'
-        kwargs.update(dict(params=[hash]))
-        block = self.rpc(cmd, **kwargs)
-        return block
-
-    def getblockhash(self, index, **kwargs):
-        cmd = 'getblockhash'
-        kwargs.update(dict(params=[index]))
-        block_hash = self.rpc(cmd, **kwargs)
-        return block_hash
-
-    def getrawtransaction(self, txid, **kwargs):
-        cmd = 'getrawtransaction'
-        kwargs.update(dict(params=[txid, 1]))
-        try:
-            transaction = self.rpc(cmd, **kwargs)
-        except RpcError as err:
-            if str(err) == 'No information available about transaction':
-                return None
-            raise
-        return transaction
-
-    def sendrawtransaction(self, hexstring, **kwargs):
-        cmd = 'sendrawtransaction'
-        kwargs.update(dict(params=[hexstring]))
-        transaction = self.rpc(cmd, **kwargs)
-        return transaction
-
     def getrawmempool(self, **kwargs):
-        """Return txs in mempool with min. fees of 0.00001 BTC/kB and max. age
-        of 1 hour."""
-        cmd = 'getrawmempool'
-        mempoolminfee = kwargs.pop('mempoolminfee', 0.00001)
-        mempoolmaxage = kwargs.pop('mempoolmaxage', 3600)
-        kwargs.update(dict(params=[True]))
-        unconfirmed_txs = self.rpc(cmd, **kwargs)
-        txs = []
-        now = int(time.time())
-        for txid, mem in unconfirmed_txs.items():
-            if now - mem['time'] > mempoolmaxage:
-                continue
-            if mem['fee'] < mempoolminfee:
-                continue
-            txs.append((txid, mem))
-        return txs
+        return self.rpc('getrawmempool', **kwargs)
 
 
 def main():
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler())
 
-    rpc = BitcoinClient()
-    best_block_hash = rpc.getbestblockhash()
-    print(best_block_hash)
-
-    mempool = rpc.getrawmempool()
+    mempool = BitcoinClient().getrawmempool()
     print(mempool[:3])
 
 

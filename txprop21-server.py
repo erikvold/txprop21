@@ -79,8 +79,7 @@ def tx(data):
 def unconfirmed_txs():
     limit = get_limit(request)
     txs = []
-    for tx in mempool()[:limit]:
-        tx_hash = tx[0]
+    for tx_hash in mempool()[:limit]:
         response = txprop21(tx_hash)
         status_code = response.get('status_code')
         data = response.get('data')

@@ -29,8 +29,7 @@ def txprop21(tx_hash):
 
 
 def mempool():
-    rpc = BitcoinClient()
-    return rpc.getrawmempool()
+    return BitcoinClient().getrawmempool()
 
 
 if __name__ == '__main__':
