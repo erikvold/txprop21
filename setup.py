@@ -8,7 +8,6 @@ setuptools.setup(
         'Flask',
         'python-memcached',
         'PyYAML',
-        'requests',
         'two1',
     ],
 )
