@@ -99,7 +99,7 @@ wallet_path = os.path.join(
     os.path.expanduser('~'),
     '.two1',
     'wallet',
-    'testnet_wallet_1.json')
+    'testnet_wallet_5.json')
 # data_provider = TwentyOneProvider()
 # from two1.wallet import Two1Wallet
 # wallet_path = os.path.join(

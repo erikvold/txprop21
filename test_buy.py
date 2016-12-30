@@ -61,15 +61,23 @@ class TestBuy(object):
         configured = Two1Wallet.configure(options)
         if configured:
             return True
-        return False1
+        return False
 
-    def load_wallet(self, filename):
-        path = os.path.join(
-            os.path.expanduser('~'), '.two1', 'wallet', filename)
+    def load_wallet(self, filename=None, mnemonic=None):
         data_provider = self.default_data_provider
+        account_type = Two1Wallet.DEFAULT_ACCOUNT_TYPE
         if self.testnet:
             data_provider = self.testnet_data_provider
-        return Two1Wallet(path, data_provider)
+            account_type = 'BIP44Testnet'
+        if filename:
+            path = os.path.join(
+                os.path.expanduser('~'), '.two1', 'wallet', filename)
+            return Two1Wallet(path, data_provider)
+        else:
+            return Two1Wallet.import_from_mnemonic(
+                data_provider=data_provider,
+                mnemonic=mnemonic,
+                account_type=account_type)
 
     def spread_utxos(self, wallet, threshold=10000000):
         confirmed = wallet.balances['confirmed']
@@ -80,7 +88,7 @@ class TestBuy(object):
         return txids
 
     def wallet_stats(self, wallet, verbose=False):
-        logger.info('*'*30 + '   [wallet_stats]   ' + '*'*30)
+        logger.info('.'*30 + '   [wallet_stats]   ' + '.'*30)
         wallet.sync_accounts()
         total = wallet.balances['total']
         confirmed = wallet.balances['confirmed']
@@ -103,7 +111,7 @@ class TestBuy(object):
                             utxo.value))
         logger.info(
             'wallet.current_address = {}'.format(wallet.current_address))
-        logger.info('*'*80 + '\n')
+        logger.info('.'*80 + '\n')
 
     def wallet_earnings(self, wallet):
         requests = BitTransferRequests(wallet, self.username)
@@ -133,7 +141,7 @@ class TestBuyTestnet(TestBuy):
         self.testnet = True
 
     def test_buy_channel(self):
-        logger.info('-'*30 + '  test_buy_channel  ' + '-'*30)
+        logger.info('#'*30 + '  test_buy_channel  ' + '#'*30)
         wallet = self.load_wallet('testnet_wallet_4.json')
         self.wallet_stats(wallet)
 
@@ -144,7 +152,7 @@ class TestBuyTestnet(TestBuy):
         self.wallet_stats(wallet)
 
     def test_buy_onchain(self):
-        logger.info('-'*30 + '  test_buy_onchain  ' + '-'*30)
+        logger.info('#'*30 + '  test_buy_onchain  ' + '#'*30)
         wallet = self.load_wallet('testnet_wallet_2.json')
         self.wallet_stats(wallet)
 
@@ -155,7 +163,7 @@ class TestBuyTestnet(TestBuy):
         self.wallet_stats(wallet)
 
     def test_buy_hub_channel(self):
-        logger.info('-'*30 + 'test_buy_hub_channel' + '-'*30)
+        logger.info('#'*30 + 'test_buy_hub_channel' + '#'*30)
         wallet = self.load_wallet('testnet_wallet_4.json')
         self.wallet_stats(wallet)
 
@@ -163,6 +171,67 @@ class TestBuyTestnet(TestBuy):
         response = requests.request(
             'GET', 'http://127.0.0.1:16000/21dotco/merchant')
         self.validate_response(response)
+
+        self.wallet_stats(wallet)
+
+    def test_buy_hub_file(self):
+        logger.info('#'*30 + ' test_buy_hub_file  ' + '#'*30)
+        wallet = self.load_wallet('testnet_wallet_4.json')
+        self.wallet_stats(wallet)
+
+        requests = OnChainRequests(wallet)
+
+        data = {'values': [12, 8]}
+        files = {'file': open('access.log', 'rb')}
+        response = requests.request(
+            'POST',
+            'http://127.0.0.1:16000/21dotco/merchant',
+            json=data,
+            files=files)
+
+        self.validate_response(response)
+
+        self.wallet_stats(wallet)
+
+    def channels(self):
+        logger.info('#'*30 + '      channels      ' + '#'*30)
+        wallet = self.load_wallet('testnet_wallet_4.json')
+        requests = ChannelRequests(wallet)
+        for channel_url in requests._channelclient.list():
+            logger.info('channel_url: {}'.format(channel_url))
+
+    def open_channel(self):
+        logger.info('#'*30 + '    open_channel    ' + '#'*30)
+        wallet = self.load_wallet('testnet_wallet_4.json')
+
+        requests = ChannelRequests(wallet)
+        channel_url = requests._channelclient.open(
+            'http://127.0.0.1:17000/payment',
+            100000,
+            86400 * 8,
+            zeroconf=True,
+            use_unconfirmed=True)
+        logger.info('channel_url: {}'.format(channel_url))
+
+        self.wallet_stats(wallet)
+
+    def close_channel(self, channel_url=None):
+        logger.info('#'*30 + '   close_channel    ' + '#'*30)
+        wallet = self.load_wallet('testnet_wallet_4.json')
+
+        requests = ChannelRequests(wallet)
+        if channel_url is None:
+            channel_url = requests._channelclient.list()[0]
+        requests._channelclient.close(channel_url)
+
+        self.wallet_stats(wallet)
+
+    def sync_channel(self, channel_url=None):
+        logger.info('#'*30 + '    sync_channel    ' + '#'*30)
+        wallet = self.load_wallet('testnet_wallet_4.json')
+
+        requests = ChannelRequests(wallet)
+        requests._channelclient.sync(url=channel_url)
 
         self.wallet_stats(wallet)
 
@@ -175,7 +244,7 @@ class TestBuyMainnet(TestBuy):
         self.testnet = False
 
     def test_buy_channel(self):
-        logger.info('-'*30 + '  test_buy_channel  ' + '-'*30)
+        logger.info('#'*30 + '  test_buy_channel  ' + '#'*30)
         wallet = self.load_wallet('default_wallet.json')
         self.wallet_stats(wallet, verbose=True)
 
@@ -205,7 +274,7 @@ class TestBuyMainnet(TestBuy):
         self.wallet_stats(wallet)
 
     def test_buy_onchain(self):
-        logger.info('-'*30 + '  test_buy_onchain  ' + '-'*30)
+        logger.info('#'*30 + '  test_buy_onchain  ' + '#'*30)
         wallet = self.load_wallet('default_wallet.json')
         self.wallet_stats(wallet)
 
@@ -219,7 +288,7 @@ class TestBuyMainnet(TestBuy):
         self.wallet_stats(wallet)
 
     def test_buy_offchain(self):
-        logger.info('-'*30 + ' test_buy_offchain  ' + '-'*30)
+        logger.info('#'*30 + ' test_buy_offchain  ' + '#'*30)
         wallet = self.load_wallet('default_wallet.json')
         logger.info('earnings = {}'.format(self.wallet_earnings(wallet)))
 
@@ -231,6 +300,54 @@ class TestBuyMainnet(TestBuy):
         self.validate_response(response)
 
         logger.info('earnings = {}'.format(self.wallet_earnings(wallet)))
+
+    def test_buy_stage_channel(self):
+        logger.info('#'*25 + '    test_buy_stage_channel    ' + '#'*25)
+        wallet = self.load_wallet('default_wallet.json')
+        self.wallet_stats(wallet, verbose=True)
+
+        requests = ChannelRequests(wallet)
+        url = 'https://mkt.21-stage.co/21dotco_stage/zip-code-data/zipdata/collect'
+        info = requests.get_402_info(url)
+        logger.info('info = {}'.format(info))
+
+        payment_server = info.get('bitcoin-payment-channel-server')
+        for zip_code in ['94109', '08015', '07728']:
+            while True:
+                try:
+                    response = requests.request(
+                        'GET', url, params=dict(zip_code=zip_code))
+                except NotReadyError as e:
+                    logging.info(str(e))
+                    time.sleep(60)
+                else:
+                    channel_url = requests._channelclient \
+                        .list(payment_server)[0]
+                    channel_balance = requests._channelclient \
+                        .status(channel_url).balance
+                    self.validate_response(response)
+                    logger.info('channel_balance = {}'.format(channel_balance))
+                    break
+
+        self.wallet_stats(wallet)
+
+    def open_prod_channel(self):
+        logger.info('#'*30 + ' open_prod_channel  ' + '#'*30)
+        wallet = self.load_wallet('default_wallet.json')
+
+        requests = ChannelRequests(wallet)
+        channel_url = requests._channelclient.open(
+            'https://mkt.21.co/payment/', 100000, 86400 * 8)
+        logger.info('channel_url: {}'.format(channel_url))
+
+    def open_stage_channel(self):
+        logger.info('#'*30 + ' open_stage_channel ' + '#'*30)
+        wallet = self.load_wallet('default_wallet.json')
+
+        requests = ChannelRequests(wallet)
+        channel_url = requests._channelclient.open(
+            'https://mkt.21-stage.co/payment/', 100000, 86400 * 8)
+        logger.info('channel_url: {}'.format(channel_url))
 
 
 if __name__ == '__main__':
@@ -245,6 +362,9 @@ if __name__ == '__main__':
     tc.setup_method()
     tc.test_buy_hub_channel()
 
+    tc.setup_method()
+    tc.test_buy_hub_file()
+
     # mainnet
     tc = TestBuyMainnet()
     tc.setup_method()
@@ -255,3 +375,6 @@ if __name__ == '__main__':
 
     tc.setup_method()
     tc.test_buy_offchain()
+
+    tc.setup_method()
+    tc.test_buy_stage_channel()

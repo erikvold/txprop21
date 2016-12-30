@@ -11,11 +11,19 @@ def index(request):
     if request.method == 'GET':
         return JsonResponse({'status': 'paid'})
 
-    raw_values = request.data.get('values')
+    bytes = 0
+    file = request.data.get('file')
+    if file:
+        content = file.read()
+        with open('uploaded.txt', 'wb') as f:
+            bytes = f.write(content)
+
+    raw_values = request.data.get('values', [])
     values = []
     for value in raw_values:
         values.append('got {}'.format(value))
-    return JsonResponse({'values': values}, status=200)
+
+    return JsonResponse({'values': values, 'bytes': bytes}, status=200)
 
 
 @api_view(['GET'])

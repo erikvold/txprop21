@@ -33,7 +33,7 @@ wallet_path = os.path.join(
     os.path.expanduser('~'),
     '.two1',
     'wallet',
-    'testnet_wallet_1.json')
+    'testnet_wallet_5.json')
 # data_provider = TwentyOneProvider()
 # wallet_path = os.path.join(
 #     os.path.expanduser('~'),
@@ -45,7 +45,7 @@ wallet = Two1Wallet(wallet_path, data_provider)
 
 payment = Payment(app, wallet, zeroconf=True)
 
-DEFAULT_PRICE = 5000
+DEFAULT_PRICE = 50000
 BULK_PRICE = 10
 
 
