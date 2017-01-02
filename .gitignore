@@ -65,4 +65,5 @@ target/
 *.log.*
 *.pid
 *.conf
+*.sqlite3
 venv
